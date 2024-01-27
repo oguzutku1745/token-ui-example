@@ -74,7 +74,7 @@ export default function Private() {
             <div className="flex flex-col items-center">
                 <FunctionComponent 
                   titles={["Transfer From Private"]} 
-                  inputTypes={[["StringBox","StringBox", "RecordBox", "AmountBox", "AddressBox", "FeeBox"], ["StringBox","StringBox","RecordBox", "AmountBox", "AddressBox", "FeeBox"]]}
+                  inputTypes={[["StringBox", "RecordBox", "AmountBox", "AddressBox", "FeeBox"], ["StringBox","StringBox","RecordBox", "AmountBox", "AddressBox", "FeeBox"]]}
                   onInputChange={handleInputDataChange} 
                 />
                     <button

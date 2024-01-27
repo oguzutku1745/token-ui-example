@@ -4,11 +4,13 @@ import AmountBox from '../Inputs/AmountBox';
 import RecordBox from '../Inputs/RecordBox';
 import StringBox from '../Inputs/StringBox';
 import FeeBox from '../Inputs/FeeBox';
+import { useProgram } from '@/context/ProgramContext';
+import { useRouter } from 'next/router';
 
 interface FunctionComponentProps {
   titles: string[];
   inputTypes: Array<Array<'StringBox' | 'AddressBox' | 'AmountBox' | 'RecordBox' | 'FeeBox'>>;
-  onInputChange: (inputData: {[key: string]: string}) => void; // New prop for the callback
+  onInputChange: (inputData: {[key: string]: string}) => void; 
 }
 
 type InputValues = {
@@ -19,6 +21,10 @@ const FunctionComponent: React.FC<FunctionComponentProps> = ({ titles, inputType
   const [activeTab, setActiveTab] = useState(0);
   const [inputValues, setInputValues] = useState<InputValues>({});
   const [inputValuesChanged, setInputValuesChanged] = useState(false);
+
+  const { mintFunctions, privateFunctions, publicFunctions } = useProgram();
+  const router = useRouter();
+  const currentPage = router.pathname.substring(1);
 
   useEffect(() => {
     if (inputValuesChanged) {
@@ -40,16 +46,43 @@ const FunctionComponent: React.FC<FunctionComponentProps> = ({ titles, inputType
     setInputValuesChanged(true);
   };
 
+  let filteredFunctionNames:any = [];
+  
+  // Rendering in related page w.r.t routing
+  switch (currentPage) {
+    case '':
+      filteredFunctionNames = mintFunctions;
+      break;
+    case 'private':
+      filteredFunctionNames = privateFunctions;
+      break;
+    case 'public':
+      filteredFunctionNames = publicFunctions;
+      break;
+    default:
+      filteredFunctionNames = [];
+  }
+
   const renderInput = (tabIndex: number, type: 'StringBox' | 'AddressBox' | 'AmountBox' | 'RecordBox' | 'FeeBox', index: number) => {
     const key = `${tabIndex}-${type}-${index}`;
-    const props = {
-      value: inputValues[key] || '',
-      onChange: (value: string) => handleInputChange(tabIndex, type, index, value)
-    };
+    let props;
+    // Passing the filtered function names to StringBox
+    if (type === 'StringBox') {
+      props = {
+        value: inputValues[key] || '',
+        onChange: (value: string) => handleInputChange(tabIndex, type, index, value),
+        functionNames: filteredFunctionNames 
+      };
+      return <StringBox {...props} />;
+    } else {
+      // For other input types
+      props = {
+        value: inputValues[key] || '',
+        onChange: (value: string) => handleInputChange(tabIndex, type, index, value)
+      };
+    }
 
     switch (type) {
-      case 'StringBox':
-        return <StringBox {...props} />;
       case 'AddressBox':
         return <AddressBox {...props} />;
       case 'AmountBox':

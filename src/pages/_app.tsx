@@ -12,6 +12,7 @@ import {
 
 // Default styles that can be overridden by your app
 require("@demox-labs/aleo-wallet-adapter-reactui/styles.css");
+import { ProgramProvider } from '../context/ProgramContext'; // Adjust the import path as needed
 
 
 export default function App({ Component, pageProps }: AppProps) {
@@ -34,8 +35,10 @@ export default function App({ Component, pageProps }: AppProps) {
       autoConnect
     >
       <WalletModalProvider>
-      <MegaMenu />
-      <Component {...pageProps} />
+        <ProgramProvider>
+          <MegaMenu />
+            <Component {...pageProps} />
+        </ProgramProvider>
       </WalletModalProvider>
     </WalletProvider>
     </>

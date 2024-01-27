@@ -74,7 +74,7 @@ export default function Public() {
             <div className="flex flex-col items-center">
                 <FunctionComponent 
                   titles={["Transfer From Public"]} 
-                  inputTypes={[["StringBox","StringBox", "AmountBox", "AddressBox", "FeeBox"]]}
+                  inputTypes={[["StringBox", "AmountBox", "AddressBox", "FeeBox"]]}
                   onInputChange={handleInputDataChange} 
                 />
                     <button

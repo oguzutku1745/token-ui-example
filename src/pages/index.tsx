@@ -8,6 +8,7 @@ import {
 } from '@demox-labs/aleo-wallet-adapter-base';
 import { useWallet } from '@demox-labs/aleo-wallet-adapter-react';
 import { LeoWalletAdapter } from '@demox-labs/aleo-wallet-adapter-leo';
+import { useProgram } from "@/context/ProgramContext";
 
 
 const inter = Inter({ subsets: ["latin"] });
@@ -37,9 +38,11 @@ export default function Home() {
     fee: 0,
   });
 
+  const { programName} = useProgram()
+
   console.log(inputData)
   const [status, setStatus] = useState<string | undefined>();
-  
+
   useEffect(() => {
     let intervalId: NodeJS.Timeout | undefined;
 
@@ -64,11 +67,11 @@ export default function Home() {
     if (!publicKey) throw new WalletNotConnectedError();
 
     const newInputs = {
-      programId: inputData['1-StringBox-0'],
-      functionName: inputData['1-StringBox-1'],
-      amount: inputData['1-AmountBox-2'],
-      address: inputData['1-AddressBox-3'],
-      fee: Number(inputData['1-FeeBox-4'])
+      programId: programName,
+      functionName: inputData['1-StringBox-0'],
+      amount: inputData['1-AmountBox-1'],
+      address: inputData['1-AddressBox-2'],
+      fee: Number(inputData['1-FeeBox-3'])
     };
   
     setInputs(newInputs);
@@ -108,7 +111,7 @@ export default function Home() {
       <div className="flex flex-col items-center">
       <FunctionComponent 
         titles={["Mint"]} 
-        inputTypes={[["StringBox","StringBox", "AmountBox", "AddressBox", "FeeBox"]]}
+        inputTypes={[["StringBox", "AmountBox", "AddressBox", "FeeBox"]]}
         onInputChange={handleInputDataChange} 
       />
           <button
