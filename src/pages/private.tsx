@@ -8,6 +8,7 @@ import {
 } from '@demox-labs/aleo-wallet-adapter-base';
 import { useWallet } from '@demox-labs/aleo-wallet-adapter-react';
 import { LeoWalletAdapter } from '@demox-labs/aleo-wallet-adapter-leo';
+import { useProgram } from "@/context/ProgramContext";
 
 
 const inter = Inter({ subsets: ["latin"] });
@@ -18,6 +19,7 @@ interface InputData {
 interface Inputs {
   programId: string;
   functionName: string;
+  record: string;
   amount: string;
   address: string;
   fee: number;
@@ -27,46 +29,83 @@ interface Inputs {
 export default function Private() {
     const { wallet, publicKey } = useWallet();
     const [inputData, setInputData] = useState<InputData>({});
+    const [transactionId, setTransactionId] = useState<string | undefined>();
+    const [status, setStatus] = useState<string | undefined>();
+    const [privTransferInputs, setInputs] = useState<Inputs>({
+      programId: '',
+      functionName: '',
+      record: '',
+      amount: '',
+      address: '',
+      fee: 0,
+    });
+
+    console.log(inputData)
 
     const handleInputDataChange = (newInputData:any) => {
         setInputData(newInputData);
       };
 
+    const { programName} = useProgram()
 
-      //TODO Transfer Logics
+    useEffect(() => {
+      let intervalId: NodeJS.Timeout | undefined;
+  
+      if (transactionId) {
+        intervalId = setInterval(() => {
+          getTransactionStatus(transactionId!);
+        }, 1000);
+      }
+  
+      return () => {
+        if (intervalId) {
+          clearInterval(intervalId);
+        }
+      };
+    }, [transactionId]);
+
       const handleSubmission = async () => {
         if (!publicKey) throw new WalletNotConnectedError();
     
-        //const newInputs = {
-        //  programId: inputData['1-StringBox-0'],
-        //  functionName: inputData['1-StringBox-1'],
-        //  amount: inputData['1-AmountBox-2'],
-        //  address: inputData['1-AddressBox-3'],
-        //  fee: Number(inputData['1-FeeBox-4'])
-        //};
+        const newInputs = {
+          programId: programName,
+          functionName: inputData['1-StringBox-0'],
+          record: inputData['1-RecordBox-1'],
+          amount: inputData['1-AmountBox-2'],
+          address: inputData['1-AddressBox-3'],
+          fee: Number(inputData['1-FeeBox-4'])
+        };
+
       
-        //setInputs(newInputs);
+        setInputs(newInputs);
     
-        //const values = [newInputs.address, newInputs.amount]
-        //console.log(values)
+        const values = [newInputs.address, newInputs.amount]
+        console.log(values)
     
-        //const aleoTransaction = Transaction.createTransaction(
-        //  publicKey,
-        //  WalletAdapterNetwork.Testnet,
-        //  publicInputs.programId,
-        //  publicInputs.functionName,
-        //  values,
-        //  publicInputs.fee!,
-        //  false
-        //);
+        const aleoTransaction = Transaction.createTransaction(
+          publicKey,
+          WalletAdapterNetwork.Testnet,
+          privTransferInputs.programId,
+          privTransferInputs.functionName,
+          values,
+          privTransferInputs.fee!,
+          false
+        );
     
-        //console.log(newInputs);
+        console.log(newInputs);
       
-        //const txId =
-        //(await (wallet?.adapter as LeoWalletAdapter).requestTransaction(
-        //  aleoTransaction
-        //)) || '';
-        //setTransactionId(txId);
+        const txId =
+        (await (wallet?.adapter as LeoWalletAdapter).requestTransaction(
+          aleoTransaction
+        )) || '';
+        setTransactionId(txId);
+      };
+
+      const getTransactionStatus = async (txId: string) => {
+        const status = await (
+          wallet?.adapter as LeoWalletAdapter
+        ).transactionStatus(txId);
+        setStatus(status);
       };
 
     return(

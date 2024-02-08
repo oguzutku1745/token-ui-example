@@ -28,6 +28,7 @@ interface Inputs {
 export default function Home() {
   const { wallet, publicKey } = useWallet();
   const [transactionId, setTransactionId] = useState<string | undefined>();
+  const [status, setStatus] = useState<string | undefined>();
   const [clicked, setClicked] = useState<boolean>(false)
   const [inputData, setInputData] = useState<InputData>({});
   const [publicInputs, setInputs] = useState<Inputs>({
@@ -39,9 +40,6 @@ export default function Home() {
   });
 
   const { programName} = useProgram()
-
-  console.log(inputData)
-  const [status, setStatus] = useState<string | undefined>();
 
   useEffect(() => {
     let intervalId: NodeJS.Timeout | undefined;
@@ -75,6 +73,7 @@ export default function Home() {
     };
   
     setInputs(newInputs);
+    console.log("Mint Inputs: ",publicInputs)
 
     const values = [newInputs.address, newInputs.amount]
     console.log(values)
