@@ -20,7 +20,7 @@ export default function App({ Component, pageProps }: AppProps) {
   const wallets = useMemo(
     () => [
       new LeoWalletAdapter({
-        appName: 'Leo Demo App',
+        appName: 'Leo Token UI with Leo Wallet',
       }),
     ],
     []

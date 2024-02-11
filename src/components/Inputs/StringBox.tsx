@@ -29,12 +29,12 @@ const StringBox: React.FC<StringBoxProps> = ({ value, onChange, functionNames = 
       <input
         type="text"
         placeholder="Enter manually"
-        className="mb-1 text-black"
+        className="bg-gray-50 mb-2 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
         value={value}
         onChange={handleInputChange}
       />
     ) : (
-      <select onChange={handleChange} value={value} className="mb-1 text-black">
+      <select onChange={handleChange} value={value} className="bg-gray-50 border mb-2 border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">
         <option value="">Select a function</option>
         {functionNames.map((name:string, index:number) => (
           <option key={index} value={name}>{name}</option>

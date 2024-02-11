@@ -39,7 +39,7 @@ export default function Home() {
     fee: 0,
   });
 
-  const { programName} = useProgram()
+  const { programName } = useProgram()
 
   useEffect(() => {
     let intervalId: NodeJS.Timeout | undefined;
@@ -73,18 +73,16 @@ export default function Home() {
     };
   
     setInputs(newInputs);
-    console.log("Mint Inputs: ",publicInputs)
 
     const values = [newInputs.address, newInputs.amount]
-    console.log(values)
 
     const aleoTransaction = Transaction.createTransaction(
       publicKey,
       WalletAdapterNetwork.Testnet,
-      publicInputs.programId,
-      publicInputs.functionName,
+      newInputs.programId,
+      newInputs.functionName,
       values,
-      publicInputs.fee!,
+      newInputs.fee!,
       false
     );
 
@@ -111,14 +109,15 @@ export default function Home() {
       <FunctionComponent 
         titles={["Mint"]} 
         inputTypes={[["StringBox", "AmountBox", "AddressBox", "FeeBox"]]}
-        onInputChange={handleInputDataChange} 
+        onInputChange={handleInputDataChange}
+        onSubmission={handleSubmission}
+        isWalletConnected={!!publicKey}
       />
-          <button
-            onClick={handleSubmission}
-            className="shadow-card dark:bg-gray-700 md:h-10 md:px-5 xl:h-12 xl:px-7"
-          >
-            {!publicKey ? 'Connect Your Wallet' : 'Submit'}
-          </button>
+        {transactionId && (
+          <div>
+            <div>{`Transaction status: ${status}`}</div>
+          </div>
+        )}
       </div>
     </main>
   );

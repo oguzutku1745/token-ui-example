@@ -85,10 +85,10 @@ export default function Private() {
         const aleoTransaction = Transaction.createTransaction(
           publicKey,
           WalletAdapterNetwork.Testnet,
-          privTransferInputs.programId,
-          privTransferInputs.functionName,
+          newInputs.programId,
+          newInputs.functionName,
           values,
-          privTransferInputs.fee!,
+          newInputs.fee!,
           false
         );
     
@@ -114,14 +114,10 @@ export default function Private() {
                 <FunctionComponent 
                   titles={["Transfer From Private"]} 
                   inputTypes={[["StringBox", "RecordBox", "AmountBox", "AddressBox", "FeeBox"], ["StringBox","StringBox","RecordBox", "AmountBox", "AddressBox", "FeeBox"]]}
-                  onInputChange={handleInputDataChange} 
+                  onInputChange={handleInputDataChange}
+                  onSubmission={handleSubmission}
+                  isWalletConnected={!!publicKey} 
                 />
-                    <button
-                      onClick={handleSubmission}
-                      className="shadow-card dark:bg-gray-700 md:h-10 md:px-5 xl:h-12 xl:px-7"
-                    >
-                      {!publicKey ? 'Connect Your Wallet' : 'Submit'}
-                    </button>
                 </div>
         </div>
     )

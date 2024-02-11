@@ -66,10 +66,10 @@ export default function Public() {
       const aleoTransaction = Transaction.createTransaction(
         publicKey,
         WalletAdapterNetwork.Testnet,
-        publicTransferInputs.programId,
-        publicTransferInputs.functionName,
+        newInputs.programId,
+        newInputs.functionName,
         values,
-        publicTransferInputs.fee!,
+        newInputs.fee!,
         false
       );
   
@@ -95,14 +95,10 @@ export default function Public() {
                 <FunctionComponent 
                   titles={["Transfer From Public"]} 
                   inputTypes={[["StringBox", "AmountBox", "AddressBox", "FeeBox"]]}
-                  onInputChange={handleInputDataChange} 
+                  onInputChange={handleInputDataChange}
+                  onSubmission={handleSubmission}
+                  isWalletConnected={!!publicKey} 
                 />
-                    <button
-                      onClick={handleSubmission}
-                      className="shadow-card dark:bg-gray-700 md:h-10 md:px-5 xl:h-12 xl:px-7"
-                    >
-                      {!publicKey ? 'Connect Your Wallet' : 'Submit'}
-                    </button>
                 </div>
         </div>
     )

@@ -10,14 +10,16 @@ import { useRouter } from 'next/router';
 interface FunctionComponentProps {
   titles: string[];
   inputTypes: Array<Array<'StringBox' | 'AddressBox' | 'AmountBox' | 'RecordBox' | 'FeeBox'>>;
-  onInputChange: (inputData: {[key: string]: string}) => void; 
+  onInputChange: (inputData: {[key: string]: string}) => void;
+  onSubmission: () => void;
+  isWalletConnected: boolean; 
 }
 
 type InputValues = {
   [key: string]: string;
 };
 
-const FunctionComponent: React.FC<FunctionComponentProps> = ({ titles, inputTypes, onInputChange }) => {
+const FunctionComponent: React.FC<FunctionComponentProps> = ({ titles, inputTypes, onInputChange, onSubmission, isWalletConnected }) => {
   const [activeTab, setActiveTab] = useState(0);
   const [inputValues, setInputValues] = useState<InputValues>({});
   const [inputValuesChanged, setInputValuesChanged] = useState(false);
@@ -97,13 +99,13 @@ const FunctionComponent: React.FC<FunctionComponentProps> = ({ titles, inputType
   };
 
   return (
-    <div className="p-6 shadow-lg">
-      <div className="flex flex-col bg-gradient-to-r from-gray-700 to-gray-500 rounded-lg shadow-xl p-4 items-center">
+    <div className="shadow-lg">
+      <div className="flex flex-col w-screen max-w-sm p-4 bg-white border rounded-lg sm:p-6 dark:bg-gray-800 dark:border-gray-700 bg-opacity-25 shadow-lg border-white border-opacity-25 g-1">
         <div className="flex justify-around text-white">
           {titles.map((title, index) => (
             <button
               key={index}
-              className={`p-2 ${activeTab === index ? 'text-blue-300' : ''}`}
+              className={`p-2 text-lg ${activeTab === index ? 'text-white' : ''}`}
               onClick={() => handleTabChange(index)}
             >
               <span className="hover:text-sky-300">{title}</span>
@@ -120,6 +122,14 @@ const FunctionComponent: React.FC<FunctionComponentProps> = ({ titles, inputType
             ))}
           </div>
         ))}
+
+        <button
+            onClick={onSubmission}
+            className="mt-4 shadow-card dark:bg-gray-700 md:h-10 md:px-5 xl:h-12 xl:px-7 rounded-lg"
+            disabled={!isWalletConnected}
+          >
+            {!isWalletConnected ? 'Connect Your Wallet First' : 'Submit'}
+          </button>
       </div>
     </div>
   );
