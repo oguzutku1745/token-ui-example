@@ -1,14 +1,10 @@
 import React, { useState, useEffect } from "react";
 import FunctionComponent from "@/components/FunctionCards/FunctionCard";
 import { Inter } from "next/font/google";
-import {
-  Transaction,
-  WalletAdapterNetwork,
-  WalletNotConnectedError,
-} from '@demox-labs/aleo-wallet-adapter-base';
-import { useWallet } from '@demox-labs/aleo-wallet-adapter-react';
-import { LeoWalletAdapter } from '@demox-labs/aleo-wallet-adapter-leo';
+import { requestCreateEvent } from '@puzzlehq/sdk';
 import { useProgram } from "@/context/ProgramContext";
+import { useAccount } from "@puzzlehq/sdk";
+import { EventType } from '@puzzlehq/types';
 
 
 const inter = Inter({ subsets: ["latin"] });
@@ -27,9 +23,11 @@ interface Inputs {
 
 
 export default function Private() {
-    const { wallet, publicKey } = useWallet();
+    const { account } = useAccount();
+    const [error, setError] = useState<string | undefined>();
+    const [loading, setLoading] = useState(false);
     const [inputData, setInputData] = useState<InputData>({});
-    const [transactionId, setTransactionId] = useState<string | undefined>();
+    const [eventId, setEventId] = useState<string | undefined>();
     const [status, setStatus] = useState<string | undefined>();
     const [privTransferInputs, setInputs] = useState<Inputs>({
       programId: '',
@@ -48,24 +46,9 @@ export default function Private() {
 
     const { programName} = useProgram()
 
-    useEffect(() => {
-      let intervalId: NodeJS.Timeout | undefined;
-  
-      if (transactionId) {
-        intervalId = setInterval(() => {
-          getTransactionStatus(transactionId!);
-        }, 1000);
-      }
-  
-      return () => {
-        if (intervalId) {
-          clearInterval(intervalId);
-        }
-      };
-    }, [transactionId]);
 
       const handleSubmission = async () => {
-        if (!publicKey) throw new WalletNotConnectedError();
+        if (!account) return;
     
         const newInputs = {
           programId: programName,
@@ -82,31 +65,22 @@ export default function Private() {
         const values = [newInputs.address, newInputs.amount]
         console.log(values)
     
-        const aleoTransaction = Transaction.createTransaction(
-          publicKey,
-          WalletAdapterNetwork.Testnet,
-          newInputs.programId,
-          newInputs.functionName,
-          values,
-          newInputs.fee!,
-          false
-        );
+        const createEventResponse = await requestCreateEvent({
+          type: EventType.Execute,
+          programId: newInputs.programId,
+          functionId: newInputs.functionName,
+          fee: newInputs.fee!,
+          inputs: values
+        });
+        if (createEventResponse.error) {
+          setError(createEventResponse.error);
+        } else {
+          setEventId(createEventResponse.eventId);
+        }
+        setLoading(false);
     
         console.log(newInputs);
-      
-        const txId =
-        (await (wallet?.adapter as LeoWalletAdapter).requestTransaction(
-          aleoTransaction
-        )) || '';
-        setTransactionId(txId);
-      };
-
-      const getTransactionStatus = async (txId: string) => {
-        const status = await (
-          wallet?.adapter as LeoWalletAdapter
-        ).transactionStatus(txId);
-        setStatus(status);
-      };
+      }
 
     return(
         <div className={`flex min-h-screen flex-col items-center justify-between p-24 ${inter.className}`}>
@@ -116,7 +90,7 @@ export default function Private() {
                   inputTypes={[["StringBox", "RecordBox", "AmountBox", "AddressBox", "FeeBox"], ["StringBox","StringBox","RecordBox", "AmountBox", "AddressBox", "FeeBox"]]}
                   onInputChange={handleInputDataChange}
                   onSubmission={handleSubmission}
-                  isWalletConnected={!!publicKey} 
+                  isWalletConnected={!!account} 
                 />
                 </div>
         </div>
