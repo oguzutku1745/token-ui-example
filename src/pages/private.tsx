@@ -62,7 +62,7 @@ export default function Private() {
       
         setInputs(newInputs);
     
-        const values = [newInputs.address, newInputs.amount]
+        const values = [newInputs.record, newInputs.address, newInputs.amount]
         console.log(values)
     
         const createEventResponse = await requestCreateEvent({
@@ -93,6 +93,13 @@ export default function Private() {
                   isWalletConnected={!!account} 
                 />
                 </div>
+        {eventId && (
+          <div>
+            <div>      
+              { eventId && <p>event pending: {eventId}</p> }
+              { error && <p>error creating event: {error}</p> }</div>
+          </div>
+        )}
         </div>
     )
 }
